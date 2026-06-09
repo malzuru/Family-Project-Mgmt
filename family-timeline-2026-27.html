@@ -49,6 +49,7 @@ var OC={clr:'#D85A30',bg:'#FAECE7',tx:'#712B13'};
 var KC={clr:'#BA7517',bg:'#FAEEDA',tx:'#633806'};
 var SC={clr:'#185FA5',bg:'#E6F1FB',tx:'#0C447C'};
 var SD=Object.assign({},SC,{dashed:true});
+var EC={clr:'#C2185B',bg:'#FCE4EC',tx:'#880E4F'};
 function mk(b,n,s,e,x){return Object.assign({},b,{name:n,s:s,e:e},x||{});}
 
 var items=[
@@ -79,13 +80,16 @@ var items=[
   mk(SC,'Clerical Day',[2027,5,8],[2027,5,8],{milestone:true}),
   mk(SC,'Anniversary Day',[2027,5,10],[2027,5,10],{milestone:true}),
   mk(SC,'Last Day',[2027,5,28],[2027,5,28],{milestone:true}),
+  mk(EC,'T-Ball',[2026,5,13],[2026,5,13],{milestone:true,hours:'1–2pm',loc:'Jackie Robinson Park'}),
+  mk(EC,'T-Ball Closing Day',[2026,5,20],[2026,5,20],{milestone:true,hours:'9–11am'}),
 ];
 
 var rows=[
-  {label:'Trips',     idx:[1,5,9]},
-  {label:'Camp',      idx:[2,3,4,6,7,8]},
-  {label:'Aftercare', idx:[0,11]},
-  {label:'School',    idx:[10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26]},
+  {label:'Trips',          idx:[1,5,9]},
+  {label:'Camp',           idx:[2,3,4,6,7,8]},
+  {label:'Extracurriculars',idx:[27,28]},
+  {label:'Aftercare',      idx:[0,11]},
+  {label:'School',         idx:[10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26]},
 ];
 
 var desktopWindows=[
