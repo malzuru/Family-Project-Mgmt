@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Timeline 2026–27</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f9f8f6;
+    color: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  @media (max-width: 600px) {
+    body { padding: 1rem 0.75rem; }
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    border: 0.5px solid rgba(0,0,0,0.1);
+    padding: 1.5rem 1.75rem 1.25rem;
+    width: 100%;
+    max-width: 820px;
+  }
+  @media (max-width: 600px) {
+    .card { padding: 1rem 1rem 0.875rem; border-radius: 12px; }
+  }
+  h1 {
+    font-size: 17px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 1.25rem;
+  }
+  @media (max-width: 600px) {
+    h1 { font-size: 15px; margin-bottom: 1rem; }
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .nav-btn {
+    width: 32px; height: 32px;
+    border: 0.5px solid rgba(0,0,0,0.15);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #333;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  @media (max-width: 600px) {
+    .nav-btn { width: 36px; height: 36px; }
+  }
+  .nav-btn:hover { background: #f0f0f0; }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  #winLabel {
+    flex: 1;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1a1a1a;
+  }
+  @media (max-width: 600px) {
+    #winLabel { font-size: 13px; }
+  }
+  #detPanel {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: #f5f4f1;
+    border-radius: 8px;
+  }
+  .det-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .det-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 5px;
+  }
+  .det-meta span { font-size: 11px; color: #555; }
+  .close-btn {
+    flex-shrink: 0; width: 22px; height: 22px;
+    border: none; background: transparent; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; color: #666;
+  }
+  .close-btn:hover { background: rgba(0,0,0,0.07); }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Family Timeline 2026–27</h1>
+
+  <div class="nav">
+    <button class="nav-btn" id="btnP" onclick="navigate(-1)" aria-label="Previous period">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <div id="winLabel"></div>
+    <button class="nav-btn" id="btnN" onclick="navigate(1)" aria-label="Next period">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+  </div>
+
+  <div id="tlChart"></div>
+
+  <div id="detPanel">
+    <div class="det-header">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+          <span id="detName" style="font-size:13px;font-weight:500;color:#1a1a1a;"></span>
+          <span id="detDates" style="font-size:12px;color:#666;"></span>
+        </div>
+        <div id="detExtras" class="det-meta"></div>
+      </div>
+      <button class="close-btn" onclick="closeDet()" aria-label="Close">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+var MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmt(d){return MN[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+
+var TC={clr:'#0F6E56',bg:'#E1F5EE',tx:'#085041'};
+var WC={clr:'#534AB7',bg:'#EEEDFE',tx:'#3C3489'};
+var OC={clr:'#D85A30',bg:'#FAECE7',tx:'#712B13'};
+var KC={clr:'#BA7517',bg:'#FAEEDA',tx:'#633806'};
+var SC={clr:'#185FA5',bg:'#E6F1FB',tx:'#0C447C'};
+var SD=Object.assign({},SC,{dashed:true});
+function mk(b,n,s,e,x){return Object.assign({},b,{name:n,s:s,e:e},x||{});}
+
+var items=[
+  mk(SD,'No Aftercare',[2026,5,15],[2026,5,26]),
+  mk(TC,'Atl/Athens',[2026,5,26],[2026,6,4]),
+  mk(WC,'Wild Arts',[2026,6,6],[2026,6,17],{loc:'PS 163, 163 W 97th St',hours:'8am–6pm, M–F',note:'Breakfast & lunch provided; nut-free program'}),
+  mk(OC,'Oasis',[2026,6,20],[2026,6,31],{loc:'Basis Independent School, 795 Columbus Ave',hours:'8am–6pm (core 9–4:30)'}),
+  mk(WC,'Wild Arts',[2026,7,3],[2026,7,7],{loc:'Riverside Park at 104th St',hours:'8:45am–3:30pm M–F (extended to 5:30pm available)'}),
+  mk(TC,'Ithaca',[2026,7,7],[2026,7,9]),
+  mk(WC,'Wild Arts',[2026,7,10],[2026,7,14],{loc:'PS 163, 163 W 97th St',hours:'8am–6pm, M–F',note:'Breakfast & lunch provided; nut-free program'}),
+  mk(KC,'KOS Multisport',[2026,7,17],[2026,7,21],{bar:'KOS',loc:'Riverside Park at 104th St',hours:'8:45am–3:30pm M–F (extended to 5:30pm available)'}),
+  mk(KC,'KOS Tennis',[2026,7,24],[2026,7,28],{bar:'KOS',loc:'Riverside Park at 104th St',hours:'8:45am–3:30pm M–F (extended to 5:30pm available)'}),
+  mk(TC,'HHI',[2026,7,31],[2026,8,8]),
+  mk(SC,'First Day',[2026,8,10],[2026,8,10],{milestone:true}),
+  mk(SD,'No Aftercare',[2026,8,10],[2026,8,19]),
+  mk(SC,'Yom Kippur',[2026,8,21],[2026,8,21],{milestone:true}),
+  mk(SC,"Indigenous Peoples'",[2026,9,12],[2026,9,12],{milestone:true}),
+  mk(SC,'Veterans Day',[2026,10,11],[2026,10,11],{milestone:true}),
+  mk(SC,'Thanksgiving',[2026,10,26],[2026,10,27],{milestone:true}),
+  mk(SD,'Winter Recess',[2026,11,24],[2027,0,1]),
+  mk(SC,'MLK Day',[2027,0,18],[2027,0,18],{milestone:true}),
+  mk(SD,'Midwinter Recess',[2027,1,15],[2027,1,19]),
+  mk(SC,'Eid al-Fitr',[2027,2,9],[2027,2,9],{milestone:true}),
+  mk(SC,'Good Friday',[2027,2,26],[2027,2,26],{milestone:true}),
+  mk(SD,'Spring Recess',[2027,3,22],[2027,3,30]),
+  mk(SC,'Eid al-Adha',[2027,4,17],[2027,4,17],{milestone:true}),
+  mk(SC,'Memorial Day',[2027,4,31],[2027,4,31],{milestone:true}),
+  mk(SC,'Clerical Day',[2027,5,8],[2027,5,8],{milestone:true}),
+  mk(SC,'Anniversary Day',[2027,5,10],[2027,5,10],{milestone:true}),
+  mk(SC,'Last Day',[2027,5,28],[2027,5,28],{milestone:true}),
+];
+
+var rows=[
+  {label:'Trips',     idx:[1,5,9]},
+  {label:'Camp',      idx:[2,3,4,6,7,8]},
+  {label:'Aftercare', idx:[0,11]},
+  {label:'School',    idx:[10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26]},
+];
+
+var desktopWindows=[
+  {s:new Date(2026,5,15),e:new Date(2026,7,1), label:'Jun – Jul 2026'},
+  {s:new Date(2026,7,1), e:new Date(2026,9,1), label:'Aug – Sep 2026'},
+  {s:new Date(2026,9,1), e:new Date(2026,11,1),label:'Oct – Nov 2026'},
+  {s:new Date(2026,11,1),e:new Date(2027,1,1), label:'Dec 2026 – Jan 2027'},
+  {s:new Date(2027,1,1), e:new Date(2027,3,1), label:'Feb – Mar 2027'},
+  {s:new Date(2027,3,1), e:new Date(2027,5,1), label:'Apr – May 2027'},
+  {s:new Date(2027,5,1), e:new Date(2027,5,29),label:'Jun 2027'},
+];
+
+var mobileWindows=[
+  {s:new Date(2026,5,15),e:new Date(2026,6,1), label:'Jun 2026'},
+  {s:new Date(2026,6,1), e:new Date(2026,7,1), label:'Jul 2026'},
+  {s:new Date(2026,7,1), e:new Date(2026,8,1), label:'Aug 2026'},
+  {s:new Date(2026,8,1), e:new Date(2026,9,1), label:'Sep 2026'},
+  {s:new Date(2026,9,1), e:new Date(2026,10,1),label:'Oct 2026'},
+  {s:new Date(2026,10,1),e:new Date(2026,11,1),label:'Nov 2026'},
+  {s:new Date(2026,11,1),e:new Date(2027,0,1), label:'Dec 2026'},
+  {s:new Date(2027,0,1), e:new Date(2027,1,1), label:'Jan 2027'},
+  {s:new Date(2027,1,1), e:new Date(2027,2,1), label:'Feb 2027'},
+  {s:new Date(2027,2,1), e:new Date(2027,3,1), label:'Mar 2027'},
+  {s:new Date(2027,3,1), e:new Date(2027,4,1), label:'Apr 2027'},
+  {s:new Date(2027,4,1), e:new Date(2027,5,1), label:'May 2027'},
+  {s:new Date(2027,5,1), e:new Date(2027,5,29),label:'Jun 2027'},
+];
+
+var wi=0;
+var prevMob=isMobile();
+
+function isMobile(){return window.innerWidth<=600;}
+function getWindows(){return isMobile()?mobileWindows:desktopWindows;}
+function dt(a){return new Date(a[0],a[1],a[2]);}
+
+function syncWindowIndex(wasMob){
+  var oldW=(wasMob?mobileWindows:desktopWindows)[wi];
+  var mid=new Date((oldW.s.getTime()+oldW.e.getTime())/2);
+  var nw=wasMob?desktopWindows:mobileWindows;
+  for(var i=0;i<nw.length;i++){if(mid>=nw[i].s&&mid<nw[i].e){wi=i;return;}}
+  wi=0;
+}
+
+function render(){
+  var mob=isMobile();
+  var LBL=mob?62:100, ROW_H=mob?44:52, AXIS_H=mob?22:26, GAP=2;
+  var barFs=mob?'10px':'11px', msFs=mob?'9px':'10px', lblFs=mob?'11px':'12px';
+  var barPad=mob?'0 4px':'0 5px', barVert=mob?'5px':'6px', diaS=mob?'5px':'6px';
+
+  var windows=getWindows();
+  var w=windows[wi],wS=w.s,wE=w.e,wDays=(wE-wS)/86400000;
+  document.getElementById('winLabel').textContent=w.label;
+  document.getElementById('btnP').disabled=(wi===0);
+  document.getElementById('btnN').disabled=(wi===windows.length-1);
+
+  function off(d){return (d-wS)/86400000;}
+  function pp(v){return (v/wDays*100).toFixed(3)+'%';}
+
+  var marks=[],cur=new Date(wS);
+  while(cur.getDay()!==1) cur=new Date(cur.getTime()+86400000);
+  while(cur<wE){marks.push(new Date(cur));cur=new Date(cur.getTime()+7*86400000);}
+
+  var h='';
+  h+='<div style="display:flex;margin-bottom:2px;">';
+  h+='<div style="width:'+LBL+'px;flex-shrink:0;"></div>';
+  h+='<div style="flex:1;position:relative;height:'+AXIS_H+'px;border-bottom:0.5px solid rgba(0,0,0,0.1);">';
+  for(var j=0;j<marks.length;j++){
+    var mo=marks[j],ov=off(mo);
+    if(ov<0||ov>=wDays) continue;
+    h+='<div style="position:absolute;left:'+pp(ov)+';top:0;bottom:0;border-left:0.5px solid rgba(0,0,0,0.08);transform:translateX(-0.5px);">';
+    h+='<span style="position:absolute;top:2px;left:2px;font-size:9px;color:#aaa;white-space:nowrap;">'+MN[mo.getMonth()]+' '+mo.getDate()+'</span>';
+    h+='</div>';
+  }
+  h+='</div></div>';
+
+  for(var ri=0;ri<rows.length;ri++){
+    var row=rows[ri];
+    var vis=row.idx.filter(function(i){return dt(items[i].e)>=wS&&dt(items[i].s)<wE;});
+    if(!vis.length) continue;
+    h+='<div style="display:flex;margin-bottom:'+GAP+'px;">';
+    h+='<div style="width:'+LBL+'px;flex-shrink:0;display:flex;align-items:center;padding-right:6px;"><span style="font-size:'+lblFs+';font-weight:500;color:#666;">'+row.label+'</span></div>';
+    h+='<div style="flex:1;position:relative;height:'+ROW_H+'px;">';
+    for(var vi=0;vi<vis.length;vi++){
+      var i=vis[vi],it=items[i];
+      var iso=off(dt(it.s)),ieo=off(dt(it.e));
+      if(it.milestone){
+        var cx=(iso+ieo+1)/2;
+        h+='<div role="button" tabindex="0" onclick="showDetail('+i+')" style="position:absolute;left:'+pp(cx)+';top:0;bottom:0;transform:translateX(-50%);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;z-index:2;">';
+        h+='<span style="font-size:'+msFs+';font-weight:500;color:'+it.tx+';white-space:nowrap;line-height:1;">'+it.name+'</span>';
+        h+='<div style="width:'+diaS+';height:'+diaS+';background:'+it.clr+';transform:rotate(45deg);flex-shrink:0;"></div>';
+        h+='</div>';
+      } else {
+        var eS=Math.max(0,iso),eE=Math.min(wDays,ieo+1);
+        if(eE<=eS) continue;
+        var border=it.dashed?'1.5px dashed '+it.clr:'1px solid '+it.clr;
+        h+='<div role="button" tabindex="0" onclick="showDetail('+i+')" style="position:absolute;left:'+pp(eS)+';width:'+pp(eE-eS)+';top:'+barVert+';bottom:'+barVert+';background:'+it.bg+';border:'+border+';border-radius:4px;display:flex;align-items:center;padding:'+barPad+';cursor:pointer;box-sizing:border-box;overflow:hidden;">';
+        h+='<span style="font-size:'+barFs+';font-weight:500;color:'+it.tx+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(it.bar||it.name)+'</span>';
+        h+='</div>';
+      }
+    }
+    h+='</div></div>';
+  }
+  document.getElementById('tlChart').innerHTML=h;
+  closeDet();
+}
+
+window.navigate=function(dir){
+  var windows=getWindows();
+  wi=Math.max(0,Math.min(windows.length-1,wi+dir));
+  render();
+};
+window.showDetail=function(i){
+  var it=items[i],iS=dt(it.s),iE=dt(it.e);
+  document.getElementById('detName').textContent=it.name;
+  document.getElementById('detDates').textContent=iS.getTime()===iE.getTime()?fmt(iS):fmt(iS)+' – '+fmt(iE);
+  var ex='';
+  if(it.hours) ex+='<span>Hours: '+it.hours+'</span>';
+  if(it.loc)   ex+='<span>Location: '+it.loc+'</span>';
+  if(it.note)  ex+='<span style="font-style:italic;">'+it.note+'</span>';
+  document.getElementById('detExtras').innerHTML=ex;
+  document.getElementById('detPanel').style.display='block';
+};
+window.closeDet=function(){
+  document.getElementById('detPanel').style.display='none';
+};
+
+var resizeTimer;
+window.addEventListener('resize',function(){
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(function(){
+    var mob=isMobile();
+    if(mob!==prevMob){syncWindowIndex(prevMob);prevMob=mob;}
+    render();
+  },100);
+});
+
+render();
+})();
+</script>
+</body>
+</html>
