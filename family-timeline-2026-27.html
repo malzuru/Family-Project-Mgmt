@@ -30,6 +30,8 @@
           <span id="detDates" style="font-size:12px;color:#666;"></span>
         </div>
         <div id="detExtras" class="det-meta"></div>
+        <button id="detMoreBtn" onclick="toggleMore()" style="display:none;margin-top:6px;background:none;border:none;padding:0;font-size:11px;color:#888;cursor:pointer;font-family:inherit;">More ▾</button>
+        <div id="detFull" style="display:none;margin-top:6px;padding-top:6px;border-top:0.5px solid rgba(0,0,0,0.08);font-size:11px;color:#555;white-space:pre-line;line-height:1.5;"></div>
       </div>
       <button class="close-btn" onclick="closeDet()" aria-label="Close">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -55,13 +57,13 @@ function mk(b,n,s,e,x){return Object.assign({},b,{name:n,s:s,e:e},x||{});}
 var items=[
   mk(SD,'No Aftercare',[2026,5,15],[2026,5,26]),
   mk(TC,'Atl/Athens',[2026,5,26],[2026,6,4]),
-  mk(WC,'Wild Arts',[2026,6,6],[2026,6,17],{loc:'PS 163, 163 W 97th St',hours:'8am–6pm, M–F',note:'Breakfast & lunch provided; nut-free program'}),
-  mk(OC,'Oasis',[2026,6,20],[2026,6,31],{loc:'Basis Independent School, 795 Columbus Ave',hours:'8am–6pm (core 9–4:30)'}),
-  mk(WC,'Wild Arts',[2026,7,3],[2026,7,7],{loc:'Riverside Park at 104th St',hours:'8:45am–3:30pm M–F (extended to 5:30pm available)'}),
+  mk(WC,'Wild Arts',[2026,6,6],[2026,6,17],{loc:'PS 163, 163 W 97th St',hours:'8am–6pm, M–F',note:'Breakfast & lunch provided; nut-free program',bring:'Afternoon snack (nut-free)'}),
+  mk(OC,'Oasis',[2026,6,20],[2026,6,31],{loc:'Basis Independent School, 795 Columbus Ave',hours:'8am–6pm (core 9–4:30)',note:'Hot lunch & daily snacks provided',bring:'Oasis shirt and backpack'}),
+  mk(WC,'Wild Arts',[2026,7,3],[2026,7,7],{loc:'PS 163, 163 W 97th St',hours:'8am–6pm, M–F',note:'Breakfast & lunch provided; nut-free program',bring:'Afternoon snack (nut-free)'}),
   mk(TC,'Ithaca',[2026,7,7],[2026,7,9]),
-  mk(WC,'Wild Arts',[2026,7,10],[2026,7,14],{loc:'PS 163, 163 W 97th St',hours:'8am–6pm, M–F',note:'Breakfast & lunch provided; nut-free program'}),
-  mk(KC,'KOS Multisport',[2026,7,17],[2026,7,21],{bar:'KOS',loc:'Riverside Park at 104th St',hours:'8:45am–3:30pm M–F (extended to 5:30pm available)'}),
-  mk(KC,'KOS Tennis',[2026,7,24],[2026,7,28],{bar:'KOS',loc:'Riverside Park at 104th St',hours:'8:45am–3:30pm M–F (extended to 5:30pm available)'}),
+  mk(OC,'Oasis',[2026,7,10],[2026,7,14],{loc:'Basis Independent School, 795 Columbus Ave',hours:'8am–6pm (core 9–4:30)',note:'Hot lunch & daily snacks provided',bring:'Oasis shirt and backpack'}),
+  mk(KC,'KOS Multisport',[2026,7,17],[2026,7,21],{bar:'KOS',loc:'Riverside Park at 104th St',hours:'8:45am–3:30pm M–F (extended to 5:30pm available)',note:'Signed up for late pick-up & early arrival',bring:'Lunch (no sodas/glass), water bottle, sunscreen, shin guards (7+), sneakers/soccer shoes',fullnote:'LUNCH: Campers NOT signed up for our lunch program MUST BRING LUNCH EACH DAY. We do NOT allow campers to purchase lunch at camp. A freezer pack in the lunch bag is recommended and lunches will be kept under shade or in a cooler at the fields. Nut-free snacks will be provided each day before camp dismissal and cold drinking water is provided all day at our fields. PLEASE NOTE WE ARE NOT A NUT-FREE CAMP FOR LUNCH. Please no sodas, sugary drinks or glass bottles. If you are interested in having your child get lunch from Ellington in the park cafe in future weeks you can add it on through your camp account. It is $60 additional per week.\nSOCCER CAMP EQUIPMENT: Sneakers or Soccer Shoes (no cleats), shin guards if older than 7 years old.\nOTHER: MUST BRING A WATER BOTTLE TO CAMP, Sunscreen, umbrella or rain gear if threat of rain during camp day. A small towel on hot days. PLEASE WRITE YOUR CHILD\'S NAME ON ANY BELONGINGS OR EQUIPMENT THEY BRING TO CAMP!\nUNIFORM: Campers will be given 3 Kids of Summer camp T-shirts, a drawstring bag and water bottle. They should wear a camp shirt each day if possible. Multi-sport campers will receive a full uniform for the morning sport.\nEXTENDED DAY PICK-UP 3:30–5:30PM AT 101ST STREET SOCCER FIELD: For campers registered for Extended Day Pick-Up it will be anytime between 3:30 and 5:30 P.M. Extended day pick-up is by 5:30 P.M. sharp. Additional fees may be imposed past 5:30. If it rains during the late pick up period our late pick up coach will text or call you.\nEARLY DROP-OFF: Will start at 8:15 AM at the soccer or Tennis camps on 101st street in the park. Campers will be supervised by a coach there.\nSUNSCREEN: Should be applied each day before camp. We CANNOT be responsible for applying sunscreen to campers at camp.\nVERY HOT DAYS: We plan on being at our fields on hot days but take extra water breaks and have extended lunch period in the shade. On some occasions we may set up slip and slides or sprinklers for the campers. A small towel is recommended.\nCELL PHONE POLICY: Cell phones are allowed at camp but Kids of Summer is not responsible for them. Campers are only permitted to use them at lunch time or in an emergency.\nSCOOTERS AND BIKES: Can be ridden to and from camp but are NOT allowed to be ridden during camp hours. Kids of Summer is not responsible for bikes or scooters at camp.'}),
+  mk(KC,'KOS Tennis',[2026,7,24],[2026,7,28],{bar:'KOS',loc:'Riverside Park at 104th St',hours:'8:45am–3:30pm M–F (extended to 5:30pm available)',note:'Signed up for late pick-up & early arrival',bring:'Lunch (no sodas/glass), water bottle, sunscreen, sneakers',fullnote:'LUNCH: Campers NOT signed up for our lunch program MUST BRING LUNCH EACH DAY. We do NOT allow campers to purchase lunch at camp. A freezer pack in the lunch bag is recommended and lunches will be kept under shade or in a cooler at the fields. Nut-free snacks will be provided each day before camp dismissal and cold drinking water is provided all day at our fields. PLEASE NOTE WE ARE NOT A NUT-FREE CAMP FOR LUNCH. Please no sodas, sugary drinks or glass bottles. If you are interested in having your child get lunch from Ellington in the park cafe in future weeks you can add it on through your camp account. It is $60 additional per week.\nOTHER: MUST BRING A WATER BOTTLE TO CAMP, Sunscreen, umbrella or rain gear if threat of rain during camp day. A small towel on hot days. PLEASE WRITE YOUR CHILD\'S NAME ON ANY BELONGINGS OR EQUIPMENT THEY BRING TO CAMP!\nUNIFORM: Campers will be given 3 Kids of Summer camp T-shirts, a drawstring bag and water bottle. They should wear a camp shirt each day if possible.\nEXTENDED DAY PICK-UP 3:30–5:30PM AT 101ST STREET TENNIS FIELD: For campers registered for Extended Day Pick-Up it will be anytime between 3:30 and 5:30 P.M. Extended day pick-up is by 5:30 P.M. sharp. Additional fees may be imposed past 5:30. If it rains during the late pick up period our late pick up coach will text or call you.\nEARLY DROP-OFF: Will start at 8:15 AM at the Tennis camps on 101st street in the park. Campers will be supervised by a coach there.\nSUNSCREEN: Should be applied each day before camp. We CANNOT be responsible for applying sunscreen to campers at camp.\nVERY HOT DAYS: We plan on being at our fields on hot days but take extra water breaks and have extended lunch period in the shade. On some occasions we may set up slip and slides or sprinklers for the campers. A small towel is recommended.\nCELL PHONE POLICY: Cell phones are allowed at camp but Kids of Summer is not responsible for them. Campers are only permitted to use them at lunch time or in an emergency.\nSCOOTERS AND BIKES: Can be ridden to and from camp but are NOT allowed to be ridden during camp hours. Kids of Summer is not responsible for bikes or scooters at camp.'}),
   mk(TC,'HHI',[2026,7,31],[2026,8,8]),
   mk(SC,'First Day',[2026,8,10],[2026,8,10],{milestone:true}),
   mk(SD,'No Aftercare',[2026,8,10],[2026,8,19]),
@@ -208,9 +210,28 @@ window.showDetail=function(i){
   var ex='';
   if(it.hours) ex+='<span>Hours: '+it.hours+'</span>';
   if(it.loc)   ex+='<span>Location: '+it.loc+'</span>';
+  if(it.bring) ex+='<span>Bring: '+it.bring+'</span>';
   if(it.note)  ex+='<span style="font-style:italic;">'+it.note+'</span>';
   document.getElementById('detExtras').innerHTML=ex;
+  var moreBtn=document.getElementById('detMoreBtn');
+  var fullDiv=document.getElementById('detFull');
+  if(it.fullnote){
+    fullDiv.textContent=it.fullnote;
+    fullDiv.style.display='none';
+    moreBtn.textContent='More ▾';
+    moreBtn.style.display='block';
+  } else {
+    moreBtn.style.display='none';
+    fullDiv.style.display='none';
+  }
   document.getElementById('detPanel').style.display='block';
+};
+window.toggleMore=function(){
+  var fullDiv=document.getElementById('detFull');
+  var moreBtn=document.getElementById('detMoreBtn');
+  var show=fullDiv.style.display==='none';
+  fullDiv.style.display=show?'block':'none';
+  moreBtn.textContent=show?'Less ▴':'More ▾';
 };
 window.closeDet=function(){
   document.getElementById('detPanel').style.display='none';
