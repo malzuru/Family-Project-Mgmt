@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Family Timeline">
 <title>Family Timeline 2026–27</title>
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -31,7 +34,7 @@
         </div>
         <div id="detExtras" class="det-meta"></div>
         <button id="detMoreBtn" onclick="toggleMore()" style="display:none;margin-top:6px;background:none;border:none;padding:0;font-size:11px;color:#888;cursor:pointer;font-family:inherit;">More ▾</button>
-        <div id="detFull" style="display:none;margin-top:6px;padding-top:6px;border-top:0.5px solid rgba(0,0,0,0.08);font-size:11px;color:#555;white-space:pre-line;line-height:1.5;max-height:180px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;"></div>
+        <div id="detFull" style="display:none;margin-top:6px;padding-top:6px;border-top:0.5px solid rgba(0,0,0,0.08);font-size:11px;color:#555;white-space:pre-line;line-height:1.5;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;"></div>
       </div>
       <button class="close-btn" onclick="closeDet()" aria-label="Close">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -248,6 +251,22 @@ window.addEventListener('resize',function(){
 });
 
 render();
+})();
+
+(function(){
+  var c=document.createElement('canvas');
+  c.width=c.height=180;
+  var ctx=c.getContext('2d');
+  ctx.fillStyle='#0F6E56';
+  ctx.fillRect(0,0,180,180);
+  ctx.font='100px serif';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('👨‍👩‍👧‍👦',90,95);
+  var l=document.createElement('link');
+  l.rel='apple-touch-icon';
+  l.href=c.toDataURL('image/png');
+  document.head.appendChild(l);
 })();
 </script>
 </body>
