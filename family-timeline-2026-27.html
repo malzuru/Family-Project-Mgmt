@@ -258,12 +258,15 @@ render();
   c.width=c.height=180;
   var ctx=c.getContext('2d');
 
-  // Ocean background
-  ctx.fillStyle='#0A2E4A';
+  // Ocean background — gradient from lighter teal-blue to mid blue
+  var grad=ctx.createLinearGradient(0,0,0,180);
+  grad.addColorStop(0,'#2B8FBF');
+  grad.addColorStop(1,'#1A5F8A');
+  ctx.fillStyle=grad;
   ctx.fillRect(0,0,180,180);
-  // Subtle water shimmer
-  ctx.fillStyle='rgba(255,255,255,0.05)';
-  ctx.fillRect(0,90,180,2);ctx.fillRect(0,100,180,1);ctx.fillRect(0,108,180,1);
+  // Water shimmer lines
+  ctx.fillStyle='rgba(255,255,255,0.18)';
+  ctx.fillRect(0,90,180,2);ctx.fillRect(0,102,180,1.5);ctx.fillRect(0,112,180,1);
 
   function orca(cx,cy,s,dir){
     ctx.save();
